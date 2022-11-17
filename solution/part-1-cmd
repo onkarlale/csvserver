@@ -1,0 +1,49 @@
+- install Docker & docker-ce on your machine running on RHEL 7
+- Considering the Repository is configure
+yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+docker --version
+docker compose version
+- Run the following command to pull the image
+docker pull infracloudio/csvserver:latest
+docker pull prom/prometheus:v2.22.0
+- Run the container in background
+docker run -itd infracloudio/csvserver /bin/bash
+
+- login to the container
+docker exec -it <container_id> /bin/bash
+- Write bash script gencsv.sh to generate a file named inputFile
+
+vi gencsv.sh 
+
+if grep -q '0, 234' \n '1, 98'\n '2,34'  /tmp/file.txt
+then
+    touch inputFile
+    echo "0, 234" >> inputFile
+    echo "1, 98" >> inputFile
+   echo "2, 34" >> inputFile
+fi
+
+
+- Run the script to generate the inputFile. Make sure that the generated file is readable by other users.
+sh gencsv.sh
+ls -l /tmp/inputFile
+
+- Create the image from the running container 
+docker commit <container_id>
+- view the image which is newly created but the tagg is not assigned to it
+docker images -a
+- Add the tag to the new image
+docker tag <image_id> container2
+- run the container from the new image in background
+docker run -itd container2 /bin/bash
+
+- Access the container & check the which port is running
+docker exec -it <container_id> /bin/bash
+netstat -an 
+
+- stop the container & delete
+docker stop <container_id>
+docker rm <container_id>
+
+Run the container on perticular port
+docker run -d -p 9393:8080 --name container2 infracloudio/csvserver /bin/bash -c "export CSVSERVER_BORDER=ORANGE"
